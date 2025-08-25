@@ -6,7 +6,7 @@ export default class Navbar extends Component {
     return (
 <nav className="navbar sticky-top navbar-expand-lg bg-dark navbar-dark">
   <div className="container-fluid">
-    <Link className="navbar-brand d-flex" to="/"><img src="/icon.png" className='me-2'></img>NewsNinja</Link>
+    <Link className="navbar-brand d-flex" to="/"><img src="/icon.png" className='me-2' alt="logo"></img>NewsNinja</Link>
     <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="toggle navigation">
       <span className="navbar-toggler-icon"></span>
     </button>
