@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import NewsItem from "./NewsItem.js"
 import Spinner  from './Spinner.js'
-
+import InfiniteScroll from 'react-infinite-scroll-component'
 
 export default class News extends Component{
 
@@ -11,69 +11,66 @@ export default class News extends Component{
             articles:[],
             loading:false,
             page:1,
-            totalArticles:0
+            totalResults:0
         }
     }
 
+    updateNews=async()=>{
+        this.setState({loading:true});
+        let res=await fetch(`https://newsapi.org/v2/top-headlines?category=${this.props.category}&apiKey=8af368a850524bd2af513e9b3ef9d126&page=${this.state.page}&pageSize=16`);
+        let data=await res.json();
+        this.setState({
+            articles:data.articles,
+            loading:false,
+            totalResults:data.totalResults
+        })
+    }
+
     async componentDidMount(){
-    this.setState({loading:true});
-    let res=await fetch(`https://gnews.io/api/v4/top-headlines?category=${this.props.category}&lang=en&country=in&max=16&apikey=3cc5202b0bf73daf081ae0e730374715&page=1`);         
-    let data=await res.json();
-    this.setState({
-        articles:data.articles,
-        totalArticles:data.totalArticles,
-        loading:false 
-    });
+        this.updateNews();
     }
-
-    handlePrev=async()=>{
-        this.setState({loading:true});
-        let res=await fetch(`https://gnews.io/api/v4/top-headlines?category=${this.props.category}&lang=en&country=in&max=16&apikey=3cc5202b0bf73daf081ae0e730374715&page=${this.state.page-1}`);
+    fetchMoreData=async()=>{
+        let nextPage=this.state.page+1;
+        this.setState({page:nextPage})
+        let res=await fetch(`https://newsapi.org/v2/top-headlines?category=${this.props.category}&apiKey=8af368a850524bd2af513e9b3ef9d126&page=${nextPage}&pageSize=16`);
         let data=await res.json();
         this.setState({
-            articles:data.articles,
-            page:this.state.page-1,
-            loading:false
+            articles:this.state.articles.concat(data.articles),
+            totalResults:data.totalResults
         })
     }
     
-
-    handleNext=async()=>{
-        this.setState({loading:true});
-        let res=await fetch(`https://gnews.io/api/v4/top-headlines?category=${this.props.category}&lang=en&country=in&max=16&apikey=3cc5202b0bf73daf081ae0e730374715&page=${this.state.page+1}`);
-        let data=await res.json();
-        this.setState({
-            articles:data.articles,
-            page:this.state.page+1,
-            loading:false
-        })
-    }
-    
-
     render(){
         return(
-            <div className='container my-3'> 
+            <> 
 
-                <marquee><h1>NewNinja - Top Headlines </h1></marquee>
+                <h1 className='text-center mt-3 mb-1 mx-1'>NewNinja - Top {this.props.category.charAt(0).toUpperCase()+this.props.category.slice(1)} Headlines</h1>
                 {this.state.loading && <Spinner/>}
-
-                <div className="row">   
-                {!this.state.loading && this.state.articles.map((element)=>{
+                <InfiniteScroll
+                    dataLength={this.state.articles.length}
+                    next={this.fetchMoreData}
+                    hasMore={this.state.articles.length < this.state.totalResults}
+                    loader={<Spinner/>}>
+                
+                <div className="container">
+                <div className="row">
+                {this.state.articles.map((element)=>{
                     return  <div className='col-md-3 my-4 d-flex' key={element.url}>
-                                 <NewsItem title={element.title?element.title.slice(0,60):"No title"} 
+                                 <NewsItem title={element.title?element.title:"No title"} 
                                       description={element.description?element.description.slice(0,90):"No description"} 
-                                      imgUrl={element.image?element.image:"https://img.freepik.com/free-vector/news-grunge-text_460848-9369.jpg"} 
+                                      imgUrl={element.urlToImage?element.urlToImage:"https://img.freepik.com/free-vector/news-grunge-text_460848-9369.jpg"}
+                                      author={element.author?element.author:"Anonymous"}
+                                      date={new Date(element.publishedAt).toGMTString()}
+                                      source={element.source.name} 
                                       goToUrl={element.url}/>
                             </div>
                 })}
                 </div>
-
-                <div className="container d-flex justify-content-center">
-                    <button disabled={this.state.page<=1} type="button" className="btn btn-dark mx-2" onClick={this.handlePrev}>&larr; Previous</button>
-                    <button disabled={this.state.page +1 > Math.ceil(this.state.totalArticles/16)} type="button" className="btn btn-dark mx-2" onClick={this.handleNext}>&rarr; Next</button>
                 </div>
 
-            </div>
+                </InfiniteScroll>
+
+            </>
             
         )
     }
