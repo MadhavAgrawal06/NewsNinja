@@ -11,7 +11,9 @@ export default function News(props){
     const [page,setPage]=useState(1);
     const [totalResults,setTotalResults]=useState(0);
 
-    const fetchNews=async()=>{
+    useEffect(()=>{
+        
+        const fetchNews=async()=>{
         props.totalProgress(0);
         setLoading(true);
         let res=await fetch(`https://newsapi.org/v2/top-headlines?category=${props.category}&apiKey=${props.apiKey}&page=${page}&pageSize=16`);
@@ -25,8 +27,7 @@ export default function News(props){
 
         props.totalProgress(100);
     }
-
-    useEffect(()=>{
+    
         fetchNews();
     },[]);
 
