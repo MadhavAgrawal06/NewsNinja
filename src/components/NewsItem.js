@@ -1,22 +1,16 @@
-import React, { Component } from "react";
+import React from "react";
 
-export default class NewsItem extends Component {
-  render() {
-    let {title,description,imgUrl,goToUrl,author,date,source}=this.props;
+export default function NewsItem(props){
     return (
-
       <div className="card">
-        <img src={imgUrl} className="card-img-top" alt="..." />
-        <div className="card-body">
-          <div className="badge text-bg-primary mb-2">Source: {source}</div>
-          <h5 className="card-title">{title}</h5>
-          <p className="card-text">{description}...</p>
-          
-          <p className="card-text"><small className="text-secondary">By {author} on {date}</small></p>
-          <a href={goToUrl} rel="noreferrer" target="_blank" className="btn btn-sm btn-dark">Read more</a>
+        <div className="badge text-bg-primary" style={{position:"absolute",right:"0"}}>Source: {props.source}</div>
+        <img src={props.imgUrl} className="card-img-top " alt="..." />
+        <div className="card-body bg-light">
+          <h5 className="card-title">{props.title}</h5>
+          <p className="card-text">{props.description}...</p>
+          <p className="card-text"><small className="text-secondary">By {props.author} on {props.date}</small></p>
+          <a href={props.goToUrl} rel="noreferrer" target="_blank" className="btn btn-sm btn-dark">Read more</a>
         </div>
       </div>
-
     );
-  }
 }
