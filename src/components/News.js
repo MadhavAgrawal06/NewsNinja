@@ -29,7 +29,7 @@ export default function News(props){
     }
     
         fetchNews();
-    },[]);
+    },[props.category, props.apiKey, page, props.totalProgress]);
 
     const fetchMoreData=async()=>{
         let nextPage=page+1;
